@@ -1,12 +1,19 @@
 import React from 'react';
-import { SafeAreaView } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import AuthScreen from './src/screens/AuthScreen';
+import ListPropertyScreen from './src/screens/ListPropertyScreen';
+
+const Stack = createStackNavigator();
 
 const App = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <AuthScreen />
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Auth" component={AuthScreen} />
+        <Stack.Screen name="ListProperty" component={ListPropertyScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

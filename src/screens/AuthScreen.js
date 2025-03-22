@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { supabase } from '../lib/supabase';
+import { useNavigation } from '@react-navigation/native';
 
 const AuthScreen = () => {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -16,17 +17,20 @@ const AuthScreen = () => {
   const [userType, setUserType] = useState('landlord'); // Default user type
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authMessage, setAuthMessage] = useState('');
+  const [currentUserType, setCurrentUserType] = useState(null);
+  const navigation = useNavigation();
 
   const handleAuth = async () => {
     try {
       if (isSignIn) {
         // Sign In
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data: { user }, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
         setIsAuthenticated(true);
+        setCurrentUserType(user.user_metadata.user_type);
         setAuthMessage(`Welcome back, ${email}!`);
       } else {
         // Sign Up
@@ -48,8 +52,15 @@ const AuthScreen = () => {
   };
 
   const handleViewProperties = () => {
-    // Add navigation to properties screen here
     Alert.alert('Success', 'Navigating to properties...');
+  };
+
+  const handleListProperty = () => {
+    navigation.navigate('ListProperty');
+  };
+
+  const canListProperties = () => {
+    return ['landlord', 'landlord_realtor'].includes(currentUserType);
   };
 
   const UserTypeSelector = () => (
@@ -78,25 +89,38 @@ const AuthScreen = () => {
       <View style={styles.container}>
         <Text style={styles.successMessage}>{authMessage}</Text>
         {isAuthenticated && (
-          <TouchableOpacity 
-            style={styles.viewPropertiesButton}
-            onPress={handleViewProperties}
-          >
-            <Text style={styles.buttonText}>View Properties</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity 
+              style={styles.viewPropertiesButton}
+              onPress={handleViewProperties}
+            >
+              <Text style={styles.buttonText}>View Properties</Text>
+            </TouchableOpacity>
+
+            {canListProperties() && (
+              <TouchableOpacity 
+                style={styles.listPropertyButton}
+                onPress={handleListProperty}
+              >
+                <Text style={styles.buttonText}>List a Property</Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity 
+              style={styles.signOutButton}
+              onPress={async () => {
+                await supabase.auth.signOut();
+                setIsAuthenticated(false);
+                setAuthMessage('');
+                setEmail('');
+                setPassword('');
+                setCurrentUserType(null);
+              }}
+            >
+              <Text style={styles.buttonText}>Sign Out</Text>
+            </TouchableOpacity>
+          </>
         )}
-        <TouchableOpacity 
-          style={styles.signOutButton}
-          onPress={async () => {
-            await supabase.auth.signOut();
-            setIsAuthenticated(false);
-            setAuthMessage('');
-            setEmail('');
-            setPassword('');
-          }}
-        >
-          <Text style={styles.buttonText}>Sign Out</Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -212,6 +236,12 @@ const styles = StyleSheet.create({
   },
   signOutButton: {
     backgroundColor: '#dc3545',
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 15,
+  },
+  listPropertyButton: {
+    backgroundColor: '#28a745',
     padding: 15,
     borderRadius: 5,
     marginBottom: 15,
