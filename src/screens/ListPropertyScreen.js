@@ -147,7 +147,10 @@ const ListPropertyScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <Text style={styles.title}>List Your Property</Text>
 
       <Text style={styles.label}>Property Title</Text>
@@ -239,8 +242,11 @@ const ListPropertyScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#fff',
+  },
+  contentContainer: {
+    padding: 20,
+    paddingBottom: 50,
   },
   title: {
     fontSize: 24,
