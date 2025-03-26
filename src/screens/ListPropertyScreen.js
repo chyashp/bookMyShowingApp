@@ -12,6 +12,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../lib/supabase';
 import { decode } from 'base64-arraybuffer';
+import { useNavigation } from '@react-navigation/native';
 
 const ListPropertyScreen = () => {
   const [propertyData, setPropertyData] = useState({
@@ -24,6 +25,7 @@ const ListPropertyScreen = () => {
     description: '',
   });
   const [selectedImages, setSelectedImages] = useState([]);
+  const navigation = useNavigation();
 
   const handleImagePick = async () => {
     try {
@@ -131,6 +133,8 @@ const ListPropertyScreen = () => {
       }
 
       Alert.alert('Success', 'Property listed successfully!');
+      
+      // Clear the form
       setPropertyData({
         title: '',
         price: '',
@@ -141,6 +145,10 @@ const ListPropertyScreen = () => {
         description: '',
       });
       setSelectedImages([]);
+
+      // Navigate to ViewProperties screen
+      navigation.navigate('ViewProperties');
+      
     } catch (error) {
       Alert.alert('Error', error.message);
     }

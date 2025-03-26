@@ -52,7 +52,7 @@ const AuthScreen = () => {
   };
 
   const handleViewProperties = () => {
-    Alert.alert('Success', 'Navigating to properties...');
+    navigation.navigate('ViewProperties');
   };
 
   const handleListProperty = () => {
